@@ -1,0 +1,4 @@
+# ignore all the files directories mentioned in this files
+# RegEx you see!!
+
+.git
