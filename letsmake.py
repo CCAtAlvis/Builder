@@ -2,17 +2,41 @@ import re
 import os
 import sys
 
-# print(sys.argv)
 dirtobuild = "."
+args = sys.argv
+buildhome = False
 
-if len(sys.argv) > 1:
-    dirtobuild = sys.argv[1]
+if len(args) == 2:
+    if os.path.exists(args[1]):
+        dirtobuild = args[1]
+    else:
+        print("the path you entered does not exist!")
+        exit()
+
+if len(args) == 3:
+    if os.path.exists(args[1]):
+        dirtobuild = args[1]
+    else:
+        print("the path you entered does not exist!")
+        exit()
+
+    if args[2] == "--build-home":
+        buildhome = True
+
+settingpathignore = dirtobuild + os.sep + '.buildignore'
+settingpathconfig = dirtobuild + os.sep + '.buildconfig'
+
+buildignorehandler = ""
+buildconfighandler = ""
+
+if os.path.isfile(settingpathignore):
+    buildignorehandler = open(settingpathignore, 'r')
+
+if os.path.isfile(settingpathconfig):
+    buildconfighandler = open(settingpathconfig, 'r')
 
 ignoreList = set()
-
-buildignore = open('.buildignore', 'r')
-
-for line in buildignore:
+for line in buildignorehandler:
     temp = ""
     for x in line:
         if x == "#" or x == "\n" or x == ' ':
@@ -23,23 +47,34 @@ for line in buildignore:
     if temp != "" or temp != " ":
         ignoreList.add(temp)
 
-ignoreList.remove('')
-
-# print(ignoreList) 
+if '' in ignoreList:
+    ignoreList.remove('')
 
 f = list()
+dirstoexplore = list()
 for (dirpath, dirnames, filenames) in os.walk(dirtobuild):
     f.append(dirpath)
 
 for string in f:
     for pattern in ignoreList:
-        print(string, pattern, end="\t")
-        print(re.search(pattern, string))
-        if re.search(pattern, string) == None:
-            # print(string)
-            f.remove(string)
+        if re.search(pattern, string) != None:
+            break
+    else:
+        dirstoexplore.append(string)
 
-print("\n"*3)
+if not buildhome:
+    dirstoexplore.remove(dirtobuild)
 
-for x in f:
+filestobuild = list()
+for x in dirstoexplore:
+    # print(x)
+    for (dirpath, dirnames, filenames) in os.walk(x):
+        for files in filenames:
+            filestobuild.append(x + os.sep + files)
+            # print(x + os.sep + files, end = "\t")
+
+        # print()
+        break
+
+for x in filestobuild:
     print(x)

@@ -2,3 +2,4 @@
 # RegEx you see!!
 
 .git
+.vs*
