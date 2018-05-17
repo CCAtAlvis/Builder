@@ -1,25 +1,22 @@
-import re
 import os
 import sys
+import fnmatch
+
+# TODO: proper variable naming
 
 dirtobuild = "."
 args = sys.argv
 buildhome = False
 
-if len(args) == 2:
+# TODO: add proper agrs chacking
+if len(args) > 1:
     if os.path.exists(args[1]):
         dirtobuild = args[1]
     else:
         print("the path you entered does not exist!")
         exit()
 
-if len(args) == 3:
-    if os.path.exists(args[1]):
-        dirtobuild = args[1]
-    else:
-        print("the path you entered does not exist!")
-        exit()
-
+if len(args) > 2:
     if args[2] == "--build-home":
         buildhome = True
 
@@ -36,6 +33,7 @@ if os.path.isfile(settingpathconfig):
     buildconfighandler = open(settingpathconfig, 'r')
 
 ignoreList = set()
+# TODO: proper building of .buildignore
 for line in buildignorehandler:
     temp = ""
     for x in line:
@@ -45,35 +43,28 @@ for line in buildignorehandler:
             temp += x
 
     if temp != "" or temp != " ":
-        ignoreList.add(temp)
+        ignoreList.add('*'+temp+'*')
 
 if '' in ignoreList:
     ignoreList.remove('')
 
 f = list()
-dirstoexplore = list()
+dirstoexplore = (dirtobuild)
 for (dirpath, dirnames, filenames) in os.walk(dirtobuild):
     f.append(dirpath)
 
-for string in f:
-    for pattern in ignoreList:
-        if re.search(pattern, string) != None:
+for n in f:
+    for ignore in ignoreList:
+        if fnmatch.fnmatch(n[len(dirtobuild)+1:], ignore):
             break
     else:
-        dirstoexplore.append(string)
-
-if not buildhome:
-    dirstoexplore.remove(dirtobuild)
+        dirstoexplore.append(n)
 
 filestobuild = list()
 for x in dirstoexplore:
-    # print(x)
     for (dirpath, dirnames, filenames) in os.walk(x):
         for files in filenames:
             filestobuild.append(x + os.sep + files)
-            # print(x + os.sep + files, end = "\t")
-
-        # print()
         break
 
 for x in filestobuild:
