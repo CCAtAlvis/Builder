@@ -1,8 +1,10 @@
 import os
 import sys
 import fnmatch
+import subprocess
 
 # TODO: proper variable naming
+# TODO: maybe make this code modular
 
 dirtobuild = "."
 args = sys.argv
@@ -11,7 +13,7 @@ buildhome = False
 # TODO: add proper agrs chacking
 if len(args) > 1:
     if os.path.exists(args[1]):
-        dirtobuild = args[1]
+        dirtobuild = args[1].replace('\\','/')
     else:
         print("the path you entered does not exist!")
         exit()
@@ -49,7 +51,7 @@ if '' in ignoreList:
     ignoreList.remove('')
 
 f = list()
-dirstoexplore = (dirtobuild)
+dirstoexplore = [dirtobuild,]
 for (dirpath, dirnames, filenames) in os.walk(dirtobuild):
     f.append(dirpath)
 
@@ -58,14 +60,16 @@ for n in f:
         if fnmatch.fnmatch(n[len(dirtobuild)+1:], ignore):
             break
     else:
-        dirstoexplore.append(n)
+        if n not in dirstoexplore:
+            dirstoexplore.append(n)
 
-filestobuild = list()
 for x in dirstoexplore:
     for (dirpath, dirnames, filenames) in os.walk(x):
+        print(x.replace('\\', '/'))
         for files in filenames:
-            filestobuild.append(x + os.sep + files)
-        break
+            print((x + os.sep + files).replace('\\', '/'))
+            extn = x.split(".")[-1]
 
-for x in filestobuild:
-    print(x)
+        break
+    print()
+
