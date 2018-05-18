@@ -9,6 +9,7 @@ import subprocess
 dirtobuild = "."
 args = sys.argv
 buildhome = False
+extensions = {'c': 'gcc', 'py': 'python', 'java': 'javac'}
 
 # TODO: add proper agrs chacking
 if len(args) > 1:
@@ -68,7 +69,32 @@ for x in dirstoexplore:
         print(x.replace('\\', '/'))
         for files in filenames:
             print((x + os.sep + files).replace('\\', '/'))
-            extn = x.split(".")[-1]
+            ext = files.split(".")[-1]
+
+            if ext.lower() in extensions:
+                complier = extensions[ext]
+
+                if ext == 'c':
+                    cmd = complier + ' ' + (x + os.sep + files) + ' -o ' + (x + os.sep + files + '.out')
+                    print(cmd)
+                    result = subprocess.run(cmd)
+                    print("\n"*3)
+                    print(result.returncode)
+                    print("\n"*3)
+                # elif ext == 'py':
+                #     cmd = complier + ' ' + (x + os.sep + files)
+                #     print(cmd)
+                #     result = subprocess.run(cmd, timeout=0.01)
+                #     print("\n"*3)
+                #     print(result.returncode)
+                #     print("\n"*3)
+                elif ext == 'java':
+                    cmd = complier + ' ' + (x + os.sep + files)
+                    print(cmd)
+                    result = subprocess.run(cmd)
+                    print("\n"*3)
+                    print(result.returncode)
+                    print("\n"*3)
 
         break
     print()
