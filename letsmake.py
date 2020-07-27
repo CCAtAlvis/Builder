@@ -11,12 +11,12 @@ args = sys.argv
 buildhome = False
 extensions = {'c': 'gcc', 'py': 'python', 'java': 'javac'}
 
-# TODO: add proper agrs chacking
+# TODO: add proper agrs checking
 if len(args) > 1:
     if os.path.exists(args[1]):
         dirtobuild = args[1].replace('\\','/')
     else:
-        print("the path you entered does not exist!")
+        print("The path you entered does not exist!")
         exit()
 
 if len(args) > 2:
